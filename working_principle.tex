@@ -1,0 +1,213 @@
+\section{Working Principle}
+
+Feature Kernel can be implemented in various ways, here we'll describe our implementation. 
+
+\subsection{Usage Ratio}
+One of the first decisions that need to be made is size of the sub model.
+First of all, we can define the \emph{Usage Ratio} (ur) as 
+\begin{align}
+    ur := \frac{\text{Sub model size}}{\text{Full model size}} \label{eq:usage-ratio}
+\end{align}
+
+Of course a fixed $ur$, very easy to program, is not a good idea. 
+It completely arbitrary and it may be to much in some case and not enough in other situations. 
+A good choice is to having an automatically adjusting $ur$. In the current implementation $ur$ is initially set to the fixed value\footnote{This value is hard-coded} of $0.01$, so initially
+a sub model large one hundredth of the whole model. $ur$ value is automatically adjusted according to the status of the current sub problem:
+
+
+\subsubsection*{Sub problem linearly infeasible} 
+
+    In this case the random sub model is so small that is very unlikely that another random sub model
+    with the same size can be feasible. So any to find a feasible sub model (at least in the continuous) 
+    it is necessary to increase $ur$ significantly. This is the function used to update $ur$ in this case. 
+    \begin{align}
+        &ur_{i+i} = \sqrt[m]{u_{i}^{n}}\label{eq:ur-infease-grow} \\
+        With:&\nonumber \\
+        &m > n > 1 \nonumber
+    \end{align}
+
+    This function, or better class of functions, has been chosen for three reasons:
+    \begin{itemize}
+        \item It has a fixed point in 1, so is not possible that such a series produces an $ur$ larger then 1.
+        \item It is pretty fast as the beginning and than it becomes slower as $ur$ gets closer to 1.
+        \item IT allows to have a large number of points during the growth.
+    \end{itemize}
+
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{infeasible_grow_plot}
+        \caption{In those function holds that $m = n+1$}\label{fig:inf-grow-plot}
+    \end{figure}
+    
+    In Figure \ref{fig:inf-grow-plot} are shown four different configuration. This possible to notice that those function
+    grows quickly at the beginning, approximately from $ur = 0.01$ to $ur = 0.6 / 0.8$ then it starts settling
+    to $ur = 0.95 / 1$.
+
+    Because the porpoise is to grow $ur$ until the generate model is large enough to be feasible, but not so large 
+    that the sub model is practically as complex as the whole model. Also we'd like to have $ur$ to grow fast, so the number
+    of infeasible models is as limited as possible, but not too fast otherwise we'll get sub model that are too large for their
+    purpose. Last but not least we'd like to have an large number of points so the number of iteration to get to one should be high 
+    but not excessive.
+    For those reason the current Feature Kernel implementation uses $n = 4$ and $m = 5$ to define the growth function.
+
+
+
+\subsubsection*{Sub problem is linearly feasible}
+    \begin{align}
+        &u_{i+i} = 1.1 u_{n} \label{eq:ur-lin-fease-grow}
+    \end{align}
+
+    Once the model is proven to be feasible in the continuous, Feature Kernel tries to make it also feasible in the 
+    integer. This can be done by simply trying over and over, and by chance it is possible that some of those sub models
+    become integer feasible. Feature Kernel does not rely (too much) on chance and to increase its possibility to get 
+    a feasible sub model it increase $ur$ by 10\%. This value has been chosen hoping that when the solution is feasible 
+    in the continuous it is also close to be feasible in the integer. So this 10\% increase should be done just a few times
+    before getting a feasible integer problem. If that holds true $ur$ should never become too close to 1.  
+    It also possible that some models requires all the variables to become integer feasible. In this case this 10\% increase 
+    can lead to a $ur > 1$, if this happens Feature Kernel simply set $ur = 1$.
+
+\subsubsection*{Sub problem is integer feasible}
+    \begin{align}
+        &u_{i+i} = 0.9 u_{n} \label{eq:ur-fease-grow}
+    \end{align}
+
+
+    If an integer feasible sub model is found means that the current $ur$ is able to provide some other integer feasible solutions. 
+    The Feature Kernel goal is to find a ranking based on a machine learning technique, so to find a valuable answer Feature Kernel needs
+    some sub models that are integer feasible and some other that are feasible only in the continuous. This is why when an integer feasible
+    sub model is found Feature Kernel decreases $ur$ by 10\%. This value has been chosen to mirror the value from Eq \ref{eq:ur-lin-fease-grow}.
+    Of course a 10\% decrease can lead to a very small $ur$ in few iterations, but consider that once the problem turn again into an integer infeasible 
+    size the growth function turns into another method.
+
+
+Those three growth function will try to keep $ur$ switching between integer feasibility, continuous feasibility and infeasiblity. This should provide 
+a meaningful dataset, rich of different statuses sub problem, to fed into the machine learning algorithm. 
+
+
+\subsubsection{Feasibility Threshold}
+
+Now it is possible to define those two indexes:
+\begin{itemize}
+    \item Continuous Feasibility Threshold (CFT): is the average $ur$ of sub problems that are feasible in the continuous but not in the integer.
+    \item Integer Feasibility Threshold (IFT): is the average $ur$ of sub problems that are integer feasible.
+\end{itemize}
+
+
+Those values allow the user to get an idea of some properties of the specific instance. They allow to understand if the problem is suitable for kernel search or not. 
+For example is it happens that IFT is very close to 1 it is very unlikely that an incremental solution, like the one built by Kernel Search, can provide a good solution in
+a shot period of time. On the other side if IFT (and/or CFT) are reasonably low it is possible for this problem to be solved using Kernel Search, in fact in this situation
+an incremental solution is a good idea to solve the problem, potentially to a value vary close to the optimal. 
+
+
+\subsection{Sub Problem Construction}
+
+The algorithm to build the random sub model is presented in the following pseudocode
+\input{algorithms/generate_random_sub_model.tex}
+\footnotetext[3]{For the actual implementation check for function \texttt{generate\_random\_sub\_model} in the source file \path{ks.py/ks_engine/feature_kernel.py}}
+\footnotetext{\textbf{for} loop in this pseudocode are foreach loops, see \href{https://en.wikipedia.org/wiki/Foreach_loop}{here}}
+
+\paragraph*{Description}
+    \Cref{algo:submodel-build} starts by checking if $ur$ is $1$, in this case the submodel is indeed the full model,
+    so no further actions are required. In the normal case this should not 
+    happen. Once done this simple check \Cref{algo:submodel-build} computes the number of
+    variables in the submodel (stored in the variable $count$)  the associated function 
+    $len$ returns the length of the model (the number of variables in it), the multiplication produces a floating point result, for the purpose of \Cref{algo:submodel-build}
+    $count$ must be an integer number, this is correction done by the cast at end of the line. Now \Cref{algo:submodel-build} disable all the variables in the model. This step is
+    done by the first for loop using the associated function $disable$. $disable$ is usually implemented by adding a new constraint to the model that
+    forces the variable to zero. At this point the submodel can be build by sampling the variables. Selected variable will be reactivated using the associated function
+    $enable$. $enable$ can be implemented to simply remove the constraint added by $disable$.
+    The function $unique\_random\_numbers$ gets to arguments: the first tells how many number should the produced list contain, the second tells the upper limit for the output values,
+    the lower is implicitly set to zero. So this function produces a list of $count$ unique random numbers in range $\left[0, model.len()\right[$ so they can be safely used as indexes. 
+
+
+
+\subsection{Sub Problem Solution}
+Each sub problem needs to be solved in order to understand if it is integer feasible, continuous feasible or infeasible. 
+This is done in two steps: first prove continuous feasibility, second prove integer feasibility. 
+
+\subsubsection{Continuous Feasibility}
+In this first step the submodel is relaxed (integer constraints are removed) and then it is solved to the optimal. The optimal solution is needed for a 
+practical reason: Random Forrest requires for each variable of each instance to have a value. This value cannot be a random one or simply one or zero. It
+must be a significant value, so we'll use the value of the variable in the linear solution. Out of base variables are not set to any special value, they are 
+simply kept to zero. Base variables of course are set to their base value. 
+
+If the sub problem happens to be infeasible in the continuous domain then this sub problem is considered as meaningless and it will not be uses in the training of the Random Forrest
+
+
+\subsubsection{Integer Feasibility}
+In the second step the model is solved as it is. In this scenario is of course possible to solve the problem at the optimal but is pointless: 
+\begin{itemize}
+    \item it's slow
+    \item there is already a value for the variables
+    \item we are looking for feasibility not for a solution
+\end{itemize}
+So in our implementation the solver is set to search for just one solution, so we are able to prove if the problem is feasible or not: if a solution is found then the model is feasible, otherwise
+is infeasible.
+
+
+\subsubsection{Time Limit}
+In some cases even a sub problem solved once may take to long. This issue can be unacceptable within a method like Feature Kernel where the number of sub problem to solve can be very high: it 
+is pointless to use a method for a faster initial kernel generation if it take more then the standard method. To avoid this issue is important to properly set a time limit. Feature Kernel
+supports two time limits:
+\begin{itemize}
+    \item Minimum Time: this is the time limit used at the beginning of method and is increased each time a submodel end due to a timeout
+    \item Maximum Time: the upper time limit, when this value is reached the actual time limit value won't increase even if the model ends due to a timeout
+\end{itemize}
+
+
+\subsubsection{Possible Sub Model Results}
+Considering the various steps and their configuration a sub problem can end with four different status:
+\begin{enumerate}
+    \item Infeasible: the model is infeasible in the continuous domain
+    \item Linear Feasible: the model is feasible in the continuous but not in the integer
+    \item Integer Feasible: the model is feasible in the integer
+    \item Timeout: the solver reach the configured time limit, nothing could be said about the feasibility. 
+\end{enumerate}
+
+
+
+\subsection{Kernel Construction}
+
+This is the final step and is made out of two components: variable sorting and variable split. 
+Variable sorting is the step involving the Random Forrest, where the solved models are joined into a dataset and then used to train the Model. The second component, namely variable split,
+takes care for the split of variables between the initial kernel and the bucket variables.
+
+\subsubsection{Variable Sort}
+When all the sub problem have been solved those solutions must be joined into a dataset. In our implementation Feature Kernel build the dataset only from instances 
+with final status of integer or continuous feasibility. Of course infeasible instances cannot be used in the dataset: variables does not have a value. For the same reason
+also sub problems ended in timeout are to be considered insignificant, also them haven't a value.
+
+In order to train the Random Forrest is important to modify the collected solution accordingly to the Random Forrest requirements. Once built the dataset it is possible to 
+start training the Random Forrest. In general it is an extremely fast process. We won't show the implementation detail about this 
+step because it is very reach of implementation details. 
+The only thing that meters is that now we have a variable ranking.
+
+
+
+\subsubsection{Variable Split}
+Once we've got a variable ranking, Feature Kernel sorts the variables (from the highest ranking one). The top variables will be uses as kernel variables, the bottom ones will be
+the buckets. Now feature kernel need to now the point to split kernel and variable. In our implementation this point is computed automatically according to the $ur$. 
+At the current time it is possible to use four different split points:
+\begin{itemize}
+    \item Mimimun Continuous Feasibility: the size of the smallest submodel that happens to be continuous feasible
+    \item  Maximum Continuous Feasibility: the size of the largest submodel that happens to be continuous feasible
+    \item Mimimun Integer Feasibility: the size of the smallest submodel that happens to be integer feasible
+    \item Maximum Integer Feasibility: the size of the largest submodel that happens to be integer feasible
+\end{itemize}
+
+
+Once the variables are split Feature Kernel can build\footnote{Depending on the actual Kernel Search implementation} the initial Kernel and the buckets. From now on Kernel Search can 
+proceed as usual. 
+
+
+\subsubsection{Feature Kernel Pseudocode}
+At this point, after all this theoretical description, we'll provide a pseudocode that should provide a guide for those who wants to implement Feature Kernel them self.
+
+\input{algorithms/feature_kernel.tex}
+
+\input{algorithms/build_solutions.tex}
+
+\input{algorithms/build_initial_kernel.tex}
+
+

@@ -1,0 +1,49 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{emptypage}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{dirtytalk}
+\usepackage{listings}
+\usepackage{tablefootnote}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\lstset{
+frame = single, 
+language=bash, 
+framexleftmargin=-15pt,
+framexrightmargin=-15pt}
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\usepackage{cleveref}
+
+\title{Feature Kernel}
+
+\author{Filippo Ranza}
+\date{}
+
+
+\begin{document}
+
+    \maketitle
+
+
+    \tableofcontents
+ 
+    \include{main_idea}
+    \include{working_principle}
+
+
+
+\end{document}

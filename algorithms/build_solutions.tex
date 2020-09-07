@@ -1,0 +1,27 @@
+\begin{algorithm}[H]
+    \caption{Build Solutions}\label{algo:build-solutions}
+    \begin{algorithmic}
+        \REQUIRE $inst: \text{MIP instance}, config: \text{Configuration}$
+        \STATE {$ur = 0.01;$}
+        \STATE {$solutions = empty\_list();$}
+        \STATE {$time\_out = config.min\_time; $}
+        \FOR {$  i\ \textbf{in}\  count(config.count)$}
+            \STATE {$ submodel = generate\_random\_submodel(inst,\ ur)^{\ref{algo:submodel-build}};$}
+            \STATE {$ solution, status = solve\_submodel(submodel, time\_out);  $}
+            \IF {$ status\ \textbf{is}\ INFEASIBLE $}
+                \STATE $uc = \sqrt[5]{uc^4};$
+            \ELSIF {$status\ \textbf{is}\ LIN\_FEASIBLE$}
+                \STATE $uc = 1.1 \times uc;$
+                \STATE $insert\_solution(solutions, solution, status);$
+            \ELSIF {$status\ \textbf{is}\ INT\_FEASIBLE$}
+                \STATE $uc = 0.9 \times uc;$
+                \STATE $insert\_solution(solutions, solution, status);$
+            \ELSIF {$status\ \textbf{is}\ TIMEOUT$}
+                \IF {$ time\_out < config.max\_time $}
+                    \STATE {$ time\_out = time\_out + 1;$}
+                \ENDIF
+            \ENDIF
+        \ENDFOR
+        \RETURN $solutions$
+    \end{algorithmic}
+\end{algorithm}

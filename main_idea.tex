@@ -1,0 +1,37 @@
+\section{Main Idea}
+Feature Kernel  is a method to generate an initial kernel for Kernel Search. 
+It aims to avoid the reliance on the linear relaxation to build the initial 
+kernel. Although a kernel built on top of the base variables in the linear relaxation can provide in most
+cases a good staring point, this method also presents some issues:
+\begin{enumerate}
+    \item Some problems are also difficult to solve when are linearly relaxed
+    \item The linear relaxation does provide little to none information about the integer model
+    \item In some models (i.e. knapsack or tsp based ones) the linear solution is very different from 
+    the integer one, so this initial kernel is not particularly significant 
+\end{enumerate}
+
+There is also a big limitation with linear relaxation in general: the solver can hardly scale to a multi threading execution, so 
+if the linear relaxation particularly  hard it will always take a long time to solve independently from the machine used to solve it.
+
+Feature Kernel aims to compute a ranking for each variable in the problem and then, using this ranking, separate kernel from bucket variables. Once 
+done that Kernel Search can proceed as normal. The ranking is compute by randomly build a number of sub problems then for each sub problem finds if it
+is infeasible, linearly feasible or continuously feasible. Each of those states will associate a specific class to each sub problem. Once each sub model status
+has been found all the sub models are used as datasets for a Random Forrest Classifier, a Machine Learning technique. Once the Random Forrest is trained on
+the given datasets it produces a \emph{Feature Importance Vector}\footnote{This is where the name Feature Kernel came from}, a ranking of the variables importance into determining the final result. 
+This ranking is then used to sort the variables. Variables with an high ranking are used set into the initial kernel, the others are used to build buckets.
+
+This method aims to provide a series of advantages:
+\begin{enumerate}
+    \item Better understand which variables are important to build a feasible solution, allowing Kernel Search to build a better initial kernel and a better buckets.
+    \item Avoid to remain stuck into a complex linear relaxation problem.
+    \item Allow the user to understand a good strategy to solve the problem with Kernel Search or to understand if Kernel Search is the right technique to solve the problem.
+    \item Allow for a better usage of multi threading during the initial kernel build, both on a single machine or within a cluster
+\end{enumerate}
+
+
+It is important to understand that Feature Kernel simply changes the way the initial kernel and the ranking of bucket variables are computed, anything else stays the same. So Kernel Search
+will not change in anyway how bucket variables are sorted and how they are groupped into the actual buckets. 
+
+
+
+

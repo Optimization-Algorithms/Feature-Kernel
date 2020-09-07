@@ -1,0 +1,19 @@
+\begin{algorithm}[H]
+    \caption[FAKE TITLE]{Generate Random Sub model\footnotemark}\label{algo:submodel-build}
+    
+    \begin{algorithmic}[1]
+        \REQUIRE $model : \text{Valid Model Instance}, ur : \text{Usage Ratio}$
+        \IF{$ur == 1$}
+            \RETURN
+        \ENDIF
+        \STATE $count = (model.len() \times ur)\ \textbf{as integer};$
+        \FOR{$var\ \textbf{in}\ model.vars() \footnotemark $}
+            
+            \STATE {$var.disable();$}
+        \ENDFOR
+        \FOR  {$ i\ \textbf{in}\  unique\_random\_numbers(count,\ model.len()) $} 
+            \STATE {$ var = model.get\_var\_by\_index(i); $}
+            \STATE {$ var.enable(); $}
+        \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
