@@ -131,7 +131,7 @@ So in our implementation the solver is set to search for just one solution, so w
 is infeasible.
 
 
-\subsubsection{Time Limit}
+\subsubsection{Time Limit}\label{sec:timeout}
 In some cases even a sub problem solved once may take to long. This issue can be unacceptable within a method like Feature Kernel where the number of sub problem to solve can be very high: it 
 is pointless to use a method for a faster initial kernel generation if it take more then the standard method. To avoid this issue is important to properly set a time limit. Feature Kernel
 supports two time limits:
