@@ -104,21 +104,6 @@ an incremental solution is a good idea to solve the problem, potentially to a va
 
 The algorithm to build the random sub model is presented in the following pseudocode
 \input{algorithms/generate_random_sub_model.tex}
-\footnotetext[3]{For the actual implementation check for function \texttt{generate\_random\_sub\_model} in the source file \path{ks.py/ks_engine/feature_kernel.py}}
-\footnotetext{\textbf{for} loop in this pseudocode are foreach loops, see \href{https://en.wikipedia.org/wiki/Foreach_loop}{here}}
-
-\paragraph*{Description}
-    \Cref{algo:submodel-build} starts by checking if $ur$ is $1$, in this case the submodel is indeed the full model,
-    so no further actions are required. In the normal case this should not 
-    happen. Once done this simple check \Cref{algo:submodel-build} computes the number of
-    variables in the submodel (stored in the variable $count$)  the associated function 
-    $len$ returns the length of the model (the number of variables in it), the multiplication produces a floating point result, for the purpose of \Cref{algo:submodel-build}
-    $count$ must be an integer number, this is correction done by the cast at end of the line. Now \Cref{algo:submodel-build} disable all the variables in the model. This step is
-    done by the first for loop using the associated function $disable$. $disable$ is usually implemented by adding a new constraint to the model that
-    forces the variable to zero. At this point the submodel can be build by sampling the variables. Selected variable will be reactivated using the associated function
-    $enable$. $enable$ can be implemented to simply remove the constraint added by $disable$.
-    The function $unique\_random\_numbers$ gets to arguments: the first tells how many number should the produced list contain, the second tells the upper limit for the output values,
-    the lower is implicitly set to zero. So this function produces a list of $count$ unique random numbers in range $\left[0, model.len()\right[$ so they can be safely used as indexes. 
 
 
 

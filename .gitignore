@@ -8,5 +8,7 @@
 *.gz
 *.eps
 *.bak
+*.loa
+*.lof
 extract_algo.py
 plot_linear_increase.py
