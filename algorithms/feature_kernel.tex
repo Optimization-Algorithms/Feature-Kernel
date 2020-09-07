@@ -1,7 +1,18 @@
 \begin{algorithm}[H]
     \caption[FAKE TITLE]{Feature Kernel}\label{algo:feature-kernel}
     \begin{algorithmic}[1]
-        \REQUIRE $inst: \text{MIP instance}, config: \text{Configuration}$
-        \STATE {$solutions = build\_solutions^{\ref{algo:build-solutions}}$}
+        \REQUIRE $inst: \text{MIP instance},\ config: \text{Configuration}$
+        \STATE {$solutions = build\_solutions^{\ref{algo:build-solutions}}(inst,\ config);$} \label{fk:line:init}
+        \STATE {$dataset = generate\_data\_set(solutions);$}    
+        \STATE {$importance = generate\_feature\_importance(dataset); $} \label{fk:line:feature-importance}
+        \STATE {$kernel,\ bucket\_vars = build\_kernel(solutions,\ importance,\ config);$}
+        \RETURN {$ (kernl\, bucket\_vars); $}
     \end{algorithmic}
 \end{algorithm}
+
+\paragraph{Description} \Cref{algo:feature-kernel} shows an high-level description of the method. On line \ref{fk:line:init} 
+\Cref{algo:feature-kernel} builds the initial solution set, see \Cref{algo:build-solutions} for the details. What metters here is
+that there is a list of submodels, with relative variable values and feasibility status if the model was at least continuous feasible. This 
+set can be used to generate the dataset, train the Random Forrest and build the feature importance vector (on line \ref{fk:line:feature-importance})
+
+
