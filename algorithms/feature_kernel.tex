@@ -5,7 +5,7 @@
         \STATE {$solutions = build\_solutions^{\ref{algo:build-solutions}}(inst,\ config);$} \label{fk:line:init}
         \STATE {$dataset = generate\_data\_set(solutions);$}    
         \STATE {$importance = generate\_feature\_importance(dataset); $} \label{fk:line:feature-importance}
-        \STATE {$kernel,\ bucket\_vars = build\_kernel(solutions,\ importance,\ config);$}
+        \STATE {$kernel,\ bucket\_vars = build\_kernel(solutions,\ importance,\ config);$} \label{fk:line:build-kernel}
         \RETURN {$ (kernl\, bucket\_vars); $}
     \end{algorithmic}
 \end{algorithm}
@@ -13,6 +13,10 @@
 \paragraph{Description} \Cref{algo:feature-kernel} shows an high-level description of the method. On line \ref{fk:line:init} 
 \Cref{algo:feature-kernel} builds the initial solution set, see \Cref{algo:build-solutions} for the details. What metters here is
 that there is a list of submodels, with relative variable values and feasibility status if the model was at least continuous feasible. This 
-set can be used to generate the dataset, train the Random Forrest and build the feature importance vector (on line \ref{fk:line:feature-importance})
+set can be used to generate the dataset, train the Random Forrest and build the feature importance vector (on line \ref{fk:line:feature-importance}).
+The feature importance vector is then used to split variables into two kernel variables and bucket variables. Function $build\_kernel$, on line \ref{fk:line:build-kernel},
+builds the initial kernel but does not build the initial buckets, this is done in a separate section of the program. \Cref{algo:feature-kernel} simply implements a 
+new Kernel builder, so it can be used in substitution of the default Kernel builder.
+
 
 
