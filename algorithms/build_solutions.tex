@@ -3,7 +3,7 @@
     \begin{algorithmic}[1]
         \REQUIRE $inst: \text{MIP instance}, config: \text{Configuration}$
         \STATE {$ur = 0.01;$} \refcomment{sec:usage-ratio}
-        \STATE {$solutions = empty\_list();$}
+        \STATE {$solutions = empty\_list();$} \label{build-solutions:line:empty-list}
         \STATE {$time\_out = config.min\_time; $}
         \FOR {$  i\ \textbf{in}\  count(config.count)$}
             \STATE {$ submodel = generate\_random\_submodel(inst,\ ur)^{\ref{algo:submodel-build}};$}
@@ -34,6 +34,9 @@ the two main inner parameter of the method: $Usage\ Ratio$, see \Cref{eq:usage-r
 \href{https://docs.python.org/3/library/collections.html#namedtuple-factory-function-for-tuples-with-named-fields}{Python namedtuple}) 
 so it is possible to pass any parameter with just one name. Config contains any usefull configuration parameter, like time limits, submodel count and the split 
 criterion. 
+
+On line \ref{build-solutions:line:empty-list}
+
 
 
 
