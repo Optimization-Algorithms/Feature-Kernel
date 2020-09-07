@@ -29,6 +29,7 @@ def save_figure(base_dir, file_name):
 
 
 def main():
+
     begin = 0.01
     count = 30
     for i in range(2, 6):
@@ -39,8 +40,9 @@ def main():
 
     plt.legend([f"$\sqrt[{i}]{{ur^{i-1}}}$" for i in range(2, 6)])
 
-    save_figure("images", "infeasible_grow_plot.eps")
+    save_figure("images", "plot_initial_increase.eps")
 
 
 if __name__ == "__main__":
     main()
+

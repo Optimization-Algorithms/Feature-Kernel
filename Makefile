@@ -1,11 +1,14 @@
-.SUFFIXES: .tex .py
+.SUFFIXES : .tex .py
 
-feature_kernel.pdf: *.tex algorithms/*tex *py 
+
+feature_kernel.pdf: *.tex algorithms/*tex images/plot_initial_increase.eps
 	@echo "Compile Latex document"
-	@pdflatex  -synctex=1 -interaction=batchmode --shell-escape feature_kernel.tex
-	@pdflatex  -synctex=1 -interaction=batchmode --shell-escape feature_kernel.tex
+	@pdflatex -interaction=batchmode feature_kernel.tex
+	@pdflatex -interaction=batchmode feature_kernel.tex
 
-%.py : 
-	python $*
+
+images/%.eps : %.py
+	@echo "Run python scripts"
+	@python $<
 
 
