@@ -7,7 +7,7 @@
         \STATE {$time\_out = config.min\_time; $}
         \FOR {$  i\ \textbf{in}\  count(config.count)$}
             \STATE {$ submodel = generate\_random\_submodel(inst,\ ur)^{\ref{algo:submodel-build}};$}
-            \STATE {$ solution, status = solve\_submodel(submodel, time\_out);  $}
+            \STATE {$ solution, status = solve\_submodel^{\ref{algo:solve-submodel}}(submodel, time\_out);  $}
             \IF {$ status\ \textbf{is}\ INFEASIBLE $}
                 \STATE $uc = \sqrt[5]{uc^4};$ \refcomment{eq:ur-infease-grow}
             \ELSIF {$status\ \textbf{is}\ LIN\_FEASIBLE$}
@@ -35,8 +35,9 @@ the two main inner parameter of the method: $Usage\ Ratio$, see \Cref{eq:usage-r
 so it is possible to pass any parameter with just one name. Config contains any usefull configuration parameter, like time limits, submodel count and the split 
 criterion. 
 
-On line \ref{build-solutions:line:empty-list}
-
+On line \ref{build-solutions:line:empty-list} the function $empty\_list$ create a new empry dinamic vector 
+(i.e. a \href{https://en.wikipedia.org/wiki/List_(abstract_data_type)}{list}) of the appropriate type to store solutions. This list can be used as the first argument of 
+the $insert\_solution$ that under the hood creates a new record and append it as the end of the list. 
 
 
 

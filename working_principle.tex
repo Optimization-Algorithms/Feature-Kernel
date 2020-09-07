@@ -141,7 +141,7 @@ supports two time limits:
 \end{itemize}
 
 
-\subsubsection{Possible Sub Model Results}
+\subsubsection{Possible Sub Model Results}\label{sec:submodel-result}
 Considering the various steps and their configuration a sub problem can end with four different status:
 \begin{enumerate}
     \item Infeasible: the model is infeasible in the continuous domain
@@ -150,7 +150,7 @@ Considering the various steps and their configuration a sub problem can end with
     \item Timeout: the solver reach the configured time limit, nothing could be said about the feasibility. 
 \end{enumerate}
 
-
+\input{algorithms/solve_sub_model.tex}
 
 \subsection{Kernel Construction}
 
