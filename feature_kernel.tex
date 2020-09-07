@@ -11,6 +11,9 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 
+\renewcommand{\algorithmiccomment}[1]{$\triangleright$ #1}
+\newcommand{\refcomment}[1]{\algorithmiccomment as in \Cref{#1}}
+
 
 \lstset{
 frame = single, 
@@ -34,6 +37,7 @@ framexrightmargin=-15pt}
 \date{}
 
 
+%
 \begin{document}
 
     \maketitle

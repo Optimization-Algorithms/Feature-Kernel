@@ -2,19 +2,19 @@
     \caption{Build Solutions}\label{algo:build-solutions}
     \begin{algorithmic}[1]
         \REQUIRE $inst: \text{MIP instance}, config: \text{Configuration}$
-        \STATE {$ur = 0.01;$}
+        \STATE {$ur = 0.01;$} \refcomment{sec:usage-ratio}
         \STATE {$solutions = empty\_list();$}
         \STATE {$time\_out = config.min\_time; $}
         \FOR {$  i\ \textbf{in}\  count(config.count)$}
             \STATE {$ submodel = generate\_random\_submodel(inst,\ ur)^{\ref{algo:submodel-build}};$}
             \STATE {$ solution, status = solve\_submodel(submodel, time\_out);  $}
             \IF {$ status\ \textbf{is}\ INFEASIBLE $}
-                \STATE $uc = \sqrt[5]{uc^4};$
+                \STATE $uc = \sqrt[5]{uc^4};$ \refcomment{eq:ur-infease-grow}
             \ELSIF {$status\ \textbf{is}\ LIN\_FEASIBLE$}
-                \STATE $uc = 1.1 \times uc;$
+                \STATE $uc = 1.1 \times uc;$ \refcomment{eq:ur-lin-fease-grow}
                 \STATE $insert\_solution(solutions, solution, status);$
             \ELSIF {$status\ \textbf{is}\ INT\_FEASIBLE$}
-                \STATE $uc = 0.9 \times uc;$
+                \STATE $uc = 0.9 \times uc;$ \refcomment{eq:ur-fease-grow}
                 \STATE $insert\_solution(solutions, solution, status);$
             \ELSIF {$status\ \textbf{is}\ TIMEOUT$}
                 \IF {$ time\_out < config.max\_time $}
@@ -27,4 +27,16 @@
 \end{algorithm}
 
 \paragraph{Description} \Cref{algo:build-solutions} is a core component of Feature Kernel. It solve any submodel to understand its feasibility status and then controls 
-the two main inner parameter of the method: $Usage\ Ratio$, see \Cref{eq:usage-ratio}, and timeout, see \Cref{sec:timeout}
+the two main inner parameter of the method: $Usage\ Ratio$, see \Cref{eq:usage-ratio}, and timeout, see \Cref{sec:timeout}.
+
+\Cref{algo:build-solutions} requires as input some kind of MIP instance and a configuration. The configuration is just a collection of named values 
+(i.e. a \href{https://en.wikipedia.org/wiki/Struct_(C_programming_language)}{C Struct} or a 
+\href{https://docs.python.org/3/library/collections.html#namedtuple-factory-function-for-tuples-with-named-fields}{Python namedtuple}) 
+so it is possible to pass any parameter with just one name. Config contains any usefull configuration parameter, like time limits, submodel count and the split 
+criterion. 
+
+
+
+
+
+
