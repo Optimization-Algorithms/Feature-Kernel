@@ -1,7 +1,7 @@
 .SUFFIXES : .tex .py
 
 
-feature_kernel.pdf: *.tex algorithms/*tex images/plot_initial_increase.eps
+feature_kernel.pdf: *.tex algorithms/*tex images/*.eps
 	@echo "Compile Latex document"
 	@pdflatex -interaction=batchmode feature_kernel.tex
 	@pdflatex -interaction=batchmode feature_kernel.tex

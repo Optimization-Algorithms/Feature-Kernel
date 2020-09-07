@@ -43,6 +43,7 @@ def main():
     save_figure("images", "plot_initial_increase.eps")
 
 
+
 if __name__ == "__main__":
     main()
 
