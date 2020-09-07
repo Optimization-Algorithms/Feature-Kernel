@@ -1,17 +1,12 @@
 # .gitignore automatically created on 2020-09-07 10:05
 # adding untracked files on 2020-09-07 10:05
-.gitignore
+*.aux
+*.log
+*.out
+*.pdf
+*.toc
+*.gz
+*.eps
+*.bak
 extract_algo.py
-feature_kernel.aux
-feature_kernel.log
-feature_kernel.out
-feature_kernel.pdf
-feature_kernel.synctex.gz
-feature_kernel.toc
-infeasible_grow_plot-eps-converted-to.pdf
-infeasible_grow_plot.eps
-main_idea.aux
-main_idea.tex.bak
 plot_linear_increase.py
-working_principle.aux
-working_principle.tex.bak
