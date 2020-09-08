@@ -10,5 +10,6 @@
 *.bak
 *.loa
 *.lof
-extract_algo.py
-plot_linear_increase.py
+*.fls
+*.fdb_latexmk
+.vscode/

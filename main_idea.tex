@@ -17,7 +17,7 @@ Feature Kernel aims to compute a ranking for each variable in the problem and th
 done that Kernel Search can proceed as normal. The ranking is compute by randomly build a number of sub problems then for each sub problem finds if it
 is infeasible, linearly feasible or continuously feasible. Each of those states will associate a specific class to each sub problem. Once each sub model status
 has been found all the sub models are used as datasets for a Random Forrest Classifier, a Machine Learning technique. Once the Random Forrest is trained on
-the given datasets it produces a \emph{Feature Importance Vector}\footnote{This is where the name Feature Kernel came from}, a ranking of the variables importance into determining the final result. 
+the given datasets it produces a \emph{Feature Importance Vector}\footnote{This is where the name Feature Kernel comes from}, a ranking of the variables importance into determining the final result. 
 This ranking is then used to sort the variables. Variables with an high ranking are used set into the initial kernel, the others are used to build buckets.
 
 This method aims to provide a series of advantages:
@@ -29,8 +29,9 @@ This method aims to provide a series of advantages:
 \end{enumerate}
 
 
-It is important to understand that Feature Kernel simply changes the way the initial kernel and the ranking of bucket variables are computed, anything else stays the same. So Kernel Search
-will not change in anyway how bucket variables are sorted and how they are groupped into the actual buckets. 
+It is important to understand that Feature Kernel simply changes the way the initial kernel and the ranking of bucket variables are computed, anything else stays the same.
+So Feature Kernel 
+will not change in anyway how bucket variables are sorted and how they are grouped into the actual buckets. 
 
 
 

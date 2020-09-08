@@ -9,12 +9,12 @@
             \STATE {$ submodel = generate\_random\_submodel(inst,\ ur)^{\ref{algo:submodel-build}};$}
             \STATE {$ solution, status = solve\_submodel^{\ref{algo:solve-submodel}}(submodel, time\_out);  $}
             \IF {$ status\ \textbf{is}\ INFEASIBLE $}
-                \STATE $uc = \sqrt[5]{uc^4};$ \refcomment{eq:ur-infease-grow}
+                \STATE $ur = \sqrt[5]{ur^4};$ \refcomment{eq:ur-infease-grow}
             \ELSIF {$status\ \textbf{is}\ LIN\_FEASIBLE$}
-                \STATE $uc = 1.1 \times uc;$ \refcomment{eq:ur-lin-fease-grow}
+                \STATE $ur = 1.1 \times ur;$ \refcomment{eq:ur-lin-fease-grow}
                 \STATE $insert\_solution(solutions, solution, status);$
             \ELSIF {$status\ \textbf{is}\ INT\_FEASIBLE$}
-                \STATE $uc = 0.9 \times uc;$ \refcomment{eq:ur-fease-grow}
+                \STATE $ur = 0.9 \times ur;$ \refcomment{eq:ur-fease-grow}
                 \STATE $insert\_solution(solutions, solution, status);$
             \ELSIF {$status\ \textbf{is}\ TIMEOUT$}
                 \IF {$ time\_out < config.max\_time $}
@@ -32,15 +32,18 @@ the two main inner parameter of the method: $Usage\ Ratio$, see \Cref{eq:usage-r
 \Cref{algo:build-solutions} requires as input some kind of MIP instance and a configuration. The configuration is just a collection of named values 
 (i.e. a \href{https://en.wikipedia.org/wiki/Struct_(C_programming_language)}{C Struct} or a 
 \href{https://docs.python.org/3/library/collections.html#namedtuple-factory-function-for-tuples-with-named-fields}{Python namedtuple}) 
-so it is possible to pass any parameter with just one name. Config contains any usefull configuration parameter, like time limits, submodel count and the split 
+so it is possible to pass any parameter with just one name. Config contains any useful configuration parameter, like time limits, submodel count and the split 
 criterion. 
 
-On line \ref{build-solutions:line:empty-list} the function $empty\_list$ create a new empry dinamic vector 
+On line \ref{build-solutions:line:empty-list} the function $empty\_list$ create a new empty dynamic vector 
 (i.e. a \href{https://en.wikipedia.org/wiki/List_(abstract_data_type)}{list}) of the appropriate type to store solutions. This list can be used as the first argument of 
 the $insert\_solution$ that under the hood creates a new record and append it as the end of the list. 
 
+Then \Cref{algo:build-solutions} generate and solve the given number of sub models, end for each submodel it check the output status and act accordingly:
+\begin{itemize}
+    \item If the model is feasible it is stored and $ur$ is update as described in \Cref{eq:ur-fease-grow} and \Cref{eq:ur-lin-fease-grow}
+    \item If the model is infeasible the solution is empty, so it is ignored, and $ur$ is update as described in \Cref{eq:ur-infease-grow}
+    \item If the model ends with a timeout the solution is empty, so it is ignored, and $timeout$ is updated as described in \Cref{sec:timeout}
+\end{itemize}
 
-
-
-
-
+Once all the submodel have been created and tested \Cref{algo:build-solutions} returns the list of valid solutions.

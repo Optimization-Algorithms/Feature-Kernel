@@ -3,8 +3,8 @@
 
 feature_kernel.pdf: *.tex algorithms/*tex images/*.eps
 	@echo "Compile Latex document"
-	@pdflatex -interaction=batchmode feature_kernel.tex
-	@pdflatex -interaction=batchmode feature_kernel.tex
+	@latexmk -pdf feature_kernel.tex
+	
 
 
 images/%.eps : %.py

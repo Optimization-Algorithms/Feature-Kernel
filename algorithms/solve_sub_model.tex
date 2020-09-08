@@ -1,5 +1,5 @@
 \begin{algorithm}[H]
-    \caption{Solve Submodel}\label{algo:solve-submodel}
+    \caption{Solve Sub model}\label{algo:solve-submodel}
     \begin{algorithmic}[1]
         \REQUIRE $submodel: \text{Submodel from \Cref{algo:submodel-build}},\ time: \text{Time limit}$
         \STATE {$lin\_model = MIPSolver::NewLP(submodel,\ time);$}
@@ -22,25 +22,25 @@
 \end{algorithm}
 
 \paragraph{Description} \Cref{algo:solve-submodel} requires as input a valid submodel, from \Cref{algo:submodel-build} and the current time limit. The module $MIPSolver$
-is an abstraction of a general purpose MIP soler, it has two methods:
+is an abstraction of a general purpose MIP solver, it has two constructors:
 \begin{itemize}
     \item NewLP : create a \emph{Model} object from the sub model, with the specified time limit. All integer constraints are ignored.
     \item NewMIP: create a \emph{Model} object from the sub model, with the specified time limit. All integer constraints are preserved.
 \end{itemize}
 
-This \emph{Model} object has the \emph{solve} method. This method solves the problems accordind to the model configuration, for example time limit or solution count limit. 
+This \emph{Model} object has the \emph{solve} method. This method solves the problems according to the model configuration, for example time limit or solution count limit. 
 \emph{solve} return two values: the first one is the model solution (i.e. a \href{https://en.wikipedia.org/wiki/Associative_array}{dictionary}), 
 the second is the optimization
-status. The possible output\footnote{The actual mip solver may support more than this statuses, but those are the strictly required to implement Feature Kernel } statuses are: 
+status. The possible output\footnote{The actual MIP solver may support more than this statuses, but those are the strictly required to implement Feature Kernel } statuses are: 
 \begin{enumerate}
     \item OPTIMAL: the optimization ended with a proven optimal result,
     \item INFEASIBLE: the model is infeasible,
     \item TIMEOUT: the optimization took more then the given timeout
-    \item SOLUTION\_COUNT: the optimization found the maximun number of feasbile solution, but is not possible to prove that this solution is optimal.
+    \item SOLUTION\_COUNT: the optimization found the maximum number of feasible solution, but is not possible to prove that one of this solutions is optimal.
 \end{enumerate}
 
 Notice that the statuses from the MIP solver and the statuses returned by \Cref{algo:solve-submodel} are not the same: statuses from \Cref{algo:solve-submodel} can be 
 considered as inner constants. 
 
-The possible outcomes are straighforeward as described in \Cref{sec:submodel-result}, according to the optimization status \Cref{algo:solve-submodel} returns the current
+The possible outcomes are straightforward as described in \Cref{sec:submodel-result}, according to the optimization status \Cref{algo:solve-submodel} returns the current
 solution (if available) and the appropriate status. 

@@ -10,15 +10,19 @@ First of all, we can define the \emph{Usage Ratio} (ur) as
 \end{align}
 
 Of course a fixed $ur$, very easy to program, is not a good idea. 
-It completely arbitrary and it may be to much in some case and not enough in other situations. 
+It is completely arbitrary and it may be to much in some case and not enough in other situations. 
 A good choice is to having an automatically adjusting $ur$. In the current implementation $ur$ is initially set to the fixed value\footnote{This value is hard-coded} of $0.01$, so initially
-a sub model large one hundredth of the whole model. $ur$ value is automatically adjusted according to the status of the current sub problem:
+a sub model large one hundredth of the whole model. This value has been chosen because it is small enough, so it is very unlikely that a sub problem so small
+is already feasible, but also it is not too small because it can lead to a slow convergence. 
 
 
-\subsubsection*{Sub problem linearly infeasible} 
+$ur$ value is automatically adjusted according to the status of the current sub problem:
+
+
+\subsubsection*{Sub problem linearly infeasible}\label{subsec:lin-infeasible-action}
 
     In this case the random sub model is so small that is very unlikely that another random sub model
-    with the same size can be feasible. So any to find a feasible sub model (at least in the continuous) 
+    with the same size can be feasible. So to find a feasible sub model (at least in the continuous) 
     it is necessary to increase $ur$ significantly. This is the function used to update $ur$ in this case. 
     \begin{align}
         &ur_{i+i} = \sqrt[m]{u_{i}^{n}}\label{eq:ur-infease-grow} \\
@@ -30,14 +34,14 @@ a sub model large one hundredth of the whole model. $ur$ value is automatically 
     \begin{itemize}
         \item It has a fixed point in 1, so is not possible that such a series produces an $ur$ larger then 1.
         \item It is pretty fast as the beginning and than it becomes slower as $ur$ gets closer to 1.
-        \item IT allows to have a large number of points during the growth.
+        \item It allows to have a large number of points during the growth.
     \end{itemize}
 
 
     \begin{figure}[H]
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{plot_initial_increase}
-        \caption{In those function holds that $m = n+1$}\label{fig:inf-grow-plot}
+        \caption{Infeasible $ur$ Growth example}\label{fig:inf-grow-plot}
     \end{figure}
     
     In Figure \ref{fig:inf-grow-plot} are shown four different configuration. This possible to notice that those function
@@ -57,7 +61,7 @@ a sub model large one hundredth of the whole model. $ur$ value is automatically 
 
 \subsubsection*{Sub problem is linearly feasible}
     \begin{align}
-        &u_{i+i} = 1.1 u_{n} \label{eq:ur-lin-fease-grow}
+        &u_{i+i} = 1.1 u_{i} \label{eq:ur-lin-fease-grow}
     \end{align}
 
     Once the model is proven to be feasible in the continuous, Feature Kernel tries to make it also feasible in the 
@@ -71,7 +75,7 @@ a sub model large one hundredth of the whole model. $ur$ value is automatically 
 
 \subsubsection*{Sub problem is integer feasible}
     \begin{align}
-        &u_{i+i} = 0.9 u_{n} \label{eq:ur-fease-grow}
+        &u_{i+i} = 0.9 u_{i} \label{eq:ur-fease-grow}
     \end{align}
 
 
@@ -80,10 +84,10 @@ a sub model large one hundredth of the whole model. $ur$ value is automatically 
     some sub models that are integer feasible and some other that are feasible only in the continuous. This is why when an integer feasible
     sub model is found Feature Kernel decreases $ur$ by 10\%. This value has been chosen to mirror the value from Eq \ref{eq:ur-lin-fease-grow}.
     Of course a 10\% decrease can lead to a very small $ur$ in few iterations, but consider that once the problem turn again into an integer infeasible 
-    size the growth function turns into another method.
+    size the growth function turns into the method described in \Cref{subsec:lin-infeasible-action}.
 
 
-Those three growth function will try to keep $ur$ switching between integer feasibility, continuous feasibility and infeasiblity. This should provide 
+Those three growth function will try to keep $ur$ switching between integer feasibility, continuous feasibility and infeasibility. This should provide 
 a meaningful dataset, rich of different statuses sub problem, to fed into the machine learning algorithm. 
 
 
@@ -96,7 +100,7 @@ Now it is possible to define those two indexes:
 \end{itemize}
 
 
-Those values allow the user to get an idea of some properties of the specific instance. They allow to understand if the problem is suitable for kernel search or not. 
+Those values allow the user to get an idea of some properties of the specific instance. They allow to understand if the problem is suitable for Kernel Search or not. 
 For example is it happens that IFT is very close to 1 it is very unlikely that an incremental solution, like the one built by Kernel Search, can provide a good solution in
 a shot period of time. On the other side if IFT (and/or CFT) are reasonably low it is possible for this problem to be solved using Kernel Search, in fact in this situation
 an incremental solution is a good idea to solve the problem, potentially to a value vary close to the optimal. 
@@ -114,7 +118,7 @@ Each sub problem needs to be solved in order to understand if it is integer feas
 This is done in two steps: first prove continuous feasibility, second prove integer feasibility. 
 
 \subsubsection{Continuous Feasibility}
-In this first step the submodel is relaxed (integer constraints are removed) and then it is solved to the optimal. The optimal solution is needed for a 
+In this first step the sub model is relaxed (integer constraints are removed) and then it is solved to the optimal. The optimal solution is needed for a 
 practical reason: Random Forrest requires for each variable of each instance to have a value. This value cannot be a random one or simply one or zero. It
 must be a significant value, so we'll use the value of the variable in the linear solution. Out of base variables are not set to any special value, they are 
 simply kept to zero. Base variables of course are set to their base value. 
@@ -138,7 +142,7 @@ In some cases even a sub problem solved once may take to long. This issue can be
 is pointless to use a method for a faster initial kernel generation if it take more then the standard method. To avoid this issue is important to properly set a time limit. Feature Kernel
 supports two time limits:
 \begin{itemize}
-    \item Minimum Time: this is the time limit used at the beginning of method and is increased each time a submodel end due to a timeout
+    \item Minimum Time: this is the time limit used at the beginning of method and is increased each time a sub model end due to a timeout
     \item Maximum Time: the upper time limit, when this value is reached the actual time limit value won't increase even if the model ends due to a timeout
 \end{itemize}
 
@@ -166,20 +170,20 @@ with final status of integer or continuous feasibility. Of course infeasible ins
 also sub problems ended in timeout are to be considered insignificant, also them haven't a value.
 
 In order to train the Random Forrest is important to modify the collected solution accordingly to the Random Forrest requirements. Once built the dataset it is possible to 
-start training the Random Forrest. In general it is an extremely fast process. We won't show the implementation detail about this 
+start training the Random Forrest. In general it is an extremely fast process. We won't show a general pseudocode about this 
 step because it is very reach of implementation details. 
 The only thing that meters is that now we have a variable ranking.
 
 
 \subsubsection{Variable Split}
 Once we've got a variable ranking, Feature Kernel sorts the variables (from the highest ranking one). The top variables will be uses as kernel variables, the bottom ones will be
-the buckets. Now feature kernel need to now the point to split kernel and variable. In our implementation this point is computed automatically according to the $ur$. 
+the buckets. Now Feature Kernel need to now the point to split kernel and variables. In our implementation this point is computed automatically according to the $ur$. 
 At the current time it is possible to use four different split points:
 \begin{itemize}
-    \item Mimimun Continuous Feasibility: the size of the smallest submodel that happens to be continuous feasible
-    \item  Maximum Continuous Feasibility: the size of the largest submodel that happens to be continuous feasible
-    \item Mimimun Integer Feasibility: the size of the smallest submodel that happens to be integer feasible
-    \item Maximum Integer Feasibility: the size of the largest submodel that happens to be integer feasible
+    \item Mimimun Continuous Feasibility: the size of the smallest sub model that happens to be continuous feasible
+    \item  Maximum Continuous Feasibility: the size of the largest sub model that happens to be continuous feasible
+    \item Mimimun Integer Feasibility: the size of the smallest sub model that happens to be integer feasible
+    \item Maximum Integer Feasibility: the size of the largest sub model that happens to be integer feasible
 \end{itemize}
 
 
