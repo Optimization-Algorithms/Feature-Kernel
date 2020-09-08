@@ -6,14 +6,15 @@ In order to read this paper you must compile it. This can be done by running
 ```bash
 make
 ```
-To succefully run this program you need to satisfy those requirements:
+To successfully run this program you need to satisfy those requirements:
  - Python 3.7 or above
  - NumPy
  - Matplotlib
  - A Latex engine
  - Make
  - latexmk
- *NOTE* this will compile to PDF.
+
+ **NOTE** this will compile to PDF.
 
 If you don't have ```make``` and/or ```latexmk``` you can compile the paper by hand. 
 First generate the images by running:
