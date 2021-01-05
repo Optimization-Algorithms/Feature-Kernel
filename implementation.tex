@@ -5,11 +5,11 @@
     In this section we present some implementation details connected to our Feature Kernel and Kernel Search implementation.  
     First of all our Kernel Search implementation, namely ks.py, is written in pure Python 3. ks.py is an open source software and
     is freely available on the \href{https://github.com/Optimization-Algorithms/ks.py}{Official Repository}. 
-    Feature Kernel is bundled with ks.py, so downloading ks.py also means to downaload Feature Kernel. For a better guide on 
+    Feature Kernel is bundled with ks.py, so downloading ks.py also means to download Feature Kernel. For a better guide on 
     how to properly install and use ks.py, please \userguide.
 
     \subsection{Software Dependencies}
-        ks.py has some dependencies, most of which are also open source. The only propretary, and commercial, software is Gurobi, the MIP 
+        ks.py has some dependencies, most of which are also open source. The only proprietary, and commercial, software is Gurobi, the MIP 
         Solver used as backend. 
         
         \subsubsection{PyYAML}
@@ -17,20 +17,20 @@
             written in a YAML file, for the actual configuration \userguide.
 
             YAML was chosen because it allows to create a human readable and writable configuration file, that is also easy to parse, indeed it does not need a custom parser.
-            Moreover YAML is a \href{https://en.wikipedia.org/wiki/Serialization}{serialization language}, so it is also possible from a program to easly create 
-            a YAML file without the need of a custom made formatter. This allows the user to easly configure ks.py but it is also possible to write a \emph{runner} that
-            automatically tries some configurations looking for the best solution with a minimal user intevention. 
+            Moreover YAML is a \href{https://en.wikipedia.org/wiki/Serialization}{serialization language}, so it is also possible from a program to easily create 
+            a YAML file without the need of a custom made formatter. This allows the user to easily configure ks.py but it is also possible to write a \emph{runner} that
+            automatically tries some configurations looking for the best solution with a minimal user intervention. 
 
 
         \subsubsection{NumPy and SciPy}
             \href{https://numpy.org/}{NumPy} and \href{https://www.scipy.org/scipylib/index.html}{SciPy} 
-            are two powerfull libraries for efficient numerical computation in Python, foundamental for large scale computation and matrix processing. Those library
-            are used to manage variable sorting, bucket creation and any other operation that requires some matrix or numrical processing in ks.py. 
+            are two powerful libraries for efficient numerical computation in Python, fundamental for large scale computation and matrix processing. Those library
+            are used to manage variable sorting, bucket creation and any other operation that requires some matrix or numerical processing in ks.py. 
 
         
         \subsubsection{scikit-learn}
-            \href{https://scikit-learn.org/stable/}{scikit-learn} is a library for Machine Learning in Python. It is pretty powerfull
-            due to its extensive preprocessing, feature engeneering and the larger variety of implemented methods. In ks.py scikit-learn is 
+            \href{https://scikit-learn.org/stable/}{scikit-learn} is a library for Machine Learning in Python. It is pretty powerful
+            due to its extensive preprocessing, feature engineering and the larger variety of implemented methods. In ks.py scikit-learn is 
             used only for its \href{https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html}{Random Forrest}
             classifier implementation. In general it is full of good methods and probably some future extension of ks.py may also use other scikit-learn
             features. 
