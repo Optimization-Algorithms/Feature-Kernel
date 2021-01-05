@@ -1,0 +1,90 @@
+\section{Exprerimental Results}
+
+In general \fk{} behaves very poorly. All the fallowing problems, taken from MIP lib, have been solved 
+using the method described above. To be more concise we  present only the results from \fk{}, because 
+the rest of the \ks{} is the same as in a standard implementation. 
+
+In order to find some patterns and to identify the actual quality of the method all the following tests was
+run with the same configuration:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        Parameter & Value \\ \hline\hline
+        Count & 50 \\ \hline
+        Min Time & 10 \\ \hline
+        Max Time & 40 \\ \hline
+    \end{tabular}
+    \caption{\fk{} configuration}\label{tab:ks-config}
+\end{table}
+
+In this configuration are not present all the required parameters: the remaining are omitted because they are not 
+involved into the way \fk{} works.
+
+In the following examples we use a simple schema to show the name of the instance, its URL and a graph showing 
+the convergence of the method. In the abscissa there is the \fk{} iteration, on the ordinate there is the \emph{usage ratio} (see \Cref{eq:usage-ratio}).
+A \fk{} iteration can end in four different statuses (see \Cref{sec:submodel-result}), identified on each graph using four different colors, as described:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        Status & Color \\ \hline\hline
+        Infeasible & Red \\ \hline
+        Linear Feasible & Blue \\ \hline
+        Integer Feasible & Green \\ \hline
+        Timeout & Black \\ \hline
+    \end{tabular}
+    \caption{Color legend for feasibility convergence graphs}
+\end{table}
+
+\newcommand{\Figure}{}
+\newcommand{\Table}{}
+\newcommand{\Instance}{}
+
+\newcommand{\importExample}[2]{
+    \begin{table}[H]
+        \centering
+        \begin{tabularx}{\textwidth}{l X}
+            Name: & #1 \\ 
+            URL:  & \url{#2} 
+        \end{tabularx}
+    \end{table}
+    \begin{figure}[H]
+        \graphicspath{{test-results/}}
+        \centering
+        \includegraphics[width=0.95\textwidth, keepaspectratio]{#1-ratio}
+        \caption{Feasibily convergence for #1}\label{fig:conv-#1}
+        \graphicspath{{images/}}
+    \end{figure}
+    \input{test-results/#1-ratio}\unskip
+    \renewcommand{\Figure}{\Cref{fig:conv-#1}}
+    \renewcommand{\Table}{\Cref{tab:stats-#1}}
+    \renewcommand{\Instance}{#1}
+}
+\importExample{air03}{https://miplib.zib.de/instance_details_air03.html}
+
+In this first example one can see that \fk{} starts finding and integer feasible solution
+only when the $ur > 0.851$. Also is not \fk{} has not been ablo to find a linear feasible model 
+until $ur < 0.768$. From the \Figure{} one can also notice that the magior part of the generated 
+models are infeasible, so they are completly useless to identify informations about the importance 
+of each variable. From \Table{} it is possible to see that $ur$ does not define a precise border between 
+Infeasible and Linear Feasible region or between Linear and Integer Feasible region.
+
+
+\importExample{beavma}{https://miplib.zib.de/instance_details_beavma.html}
+
+In \Instance{} the situation is a bit different: \ks{} has not been able to find a Linear Feasbile model. 
+Besides that also in this case reading carefully \Table{} allows to understand that $ur$ does not define any 
+boarder. From \Figure{} one can see that \ks{} generated on 3 valid submodels for \Instance{}, and all with a $ur > 0.969$. 
+This means that the value of the score computed by \ks{} is almost insignificant. An insignificant dataset will produce a 
+meaningless random forrest that will bring to a meaningless kernel. 
+
+
+\importExample{mas74}{https://miplib.zib.de/instance_details_mas74.html}
+
+\Instance{} is a lucky case: it is the only where \ks{} has been able to find an Integer Feasible model with $ur < 0.85$, infact
+
+
+
+
+\importExample{neos-2294525-abba}{https://miplib.zib.de/instance_details_neos-2294525-abba.html}

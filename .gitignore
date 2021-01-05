@@ -13,3 +13,5 @@
 *.fls
 *.fdb_latexmk
 .vscode/
+test-results/*.png
+test-results/*.tex
