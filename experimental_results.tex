@@ -98,6 +98,68 @@ maximum time allowed to solve an instance, it could be counterproductive infect 
 building an initial kernel. 
 
 
+\newcommand{\SM}{\aleph^{m}}
+\subsection{Why \fk{} performes so poorly}
+For semplicty let us identify with $I$ the original instance, with  $\SM$ the set of 
+all the subinstances with $m$ variables enabled and with $\SM_{i}$ the $i$-th instance 
+with $m$ variables enabled. We also define $\phi^{m} \subseteq \SM $ as the set of feasible instances
+in $\SM$. 
+It is implied that $m \leq n$.
+
+At each iteration \fk{} fixes $\SM$ (where $m = \lfloor ur * n \rfloor$) and randomly picks an
+instance $\SM_{i}$. Of course when $m$ is small (i.e. $ur \approx 0.2$) is very unlikely that any 
+model in $\SM$ is feasible. 
+It also easy to immagine that when $m$ is large (i.e. $ur \approx 0.9$) is very unlikely
+that there is not any feasible instances in $\SM$. It is correct to say that all linear model have a minimal $ur$ below that 
+the number of enabled variable is not enought to satisfy the constraints of the problem. Let be
+\begin{align*}
+    \tilde{m} = \min m \mid \SM{}\ \text{contains a feasible instance} \label{eq:min-m}
+\end{align*}
+This means that any information obtained by \fk{} when $ur < \frac{m}{n}$ is completely meaningless: it is obvious 
+that the problem will be infeasible and all the selected variables will be penalized by the method, but it is incorrect 
+to infer this information because the model cannot be feasible. 
+Unfortunatly there are not easy ways to identify the actual $\tilde{m}$ so we are stuck into the guessing performed by 
+\fk{}.
+
+
+Given a set of $n$ elements the number of subsets with $m$ elements is the binomial coefficent
+of $n$ over $m$, so the cardinality of $\SM$ is
+\begin{align}
+    |\SM| = \binom{n}{m}
+\end{align}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[keepaspectratio, width=\textwidth]{binomial-20}
+    \caption{$|\SM|$ when $n = 20$}\label{fig:plot-binom-20}
+\end{figure}
+
+As one can see from \Cref{fig:plot-binom-20} $|\SM|$ is a large number even when $n$ is relatively small. 
+In general the number of feasible instance in $\SM$ (with $m > \tilde{m}$) is small so the probably of 
+randomly peaking a good $\SM_{i}$ is
+\begin{align}
+    \frac{|\phi^{m}|}{|\SM|}
+\end{align}
+
+In the applications this is obvious that $|\phi^{m}| \ll |\SM|$, in general $|\phi^{m}|$ is so small with respect to $|\SM|$
+that it is safe to assume
+\begin{align}
+    \frac{|\phi^{m}|}{|\SM|} \approx \binom{n}{m}^{-1} \label{eq:prob-good-instance}
+\end{align}
+
+\Cref{eq:min-m} show us why \fk{} has so many issues in the initial phase while
+\Cref{eq:prob-good-instance} shows why for some instances was so difficult to find feasbile sub instances until $ur$ was close to $1$. 
+In the beginnig simply there are no feasible instances to find, but \fk{} looks for them anyway. In the middle phase \fk{} must be 
+extremely lucky to find a feasible instance. Only in the final phase, with $m$ close to $n$ and $|\SM|$ reasonably small, \fk{} was able 
+to find a good instance by peaking a random one. \fk{} requires a good amount of luck in order to perform properly and in practice 
+this is not possible.
+
+There are instances, like mas74 which is a knapsack problem, where $|\phi^{m}|$ is large and in this cases \fk{} could perform well. This are 
+cases where due to the form of the constraints it is hard to generate an infeasible submodel. Other instances, like neos-2294525-abba  which is 
+a set patitioning problem, have a very small $|\phi^{m}|$ and so \fk{} cannot perform well. This are instances where also with the full model
+it is hard to find a solution.
+
+
 
 
 
