@@ -1,4 +1,4 @@
-\section{Exprerimental Results}
+\section{Experimental Results}
 
 In general \fk{} behaves very poorly. All the fallowing problems, taken from MIP lib, have been solved 
 using the method described above. To be more concise we  present only the results from \fk{}, because 
@@ -53,7 +53,7 @@ A \fk{} iteration can end in four different statuses (see \Cref{sec:submodel-res
         \graphicspath{{test-results/}}
         \centering
         \includegraphics[width=0.95\textwidth, keepaspectratio]{#1-ratio}
-        \caption{Feasibily convergence for #1}\label{fig:conv-#1}
+        \caption{Feasibility convergence for #1}\label{fig:conv-#1}
         \graphicspath{{images/}}
     \end{figure}
     \input{test-results/#1-ratio}\unskip
@@ -64,27 +64,43 @@ A \fk{} iteration can end in four different statuses (see \Cref{sec:submodel-res
 \importExample{air03}{https://miplib.zib.de/instance_details_air03.html}
 
 In this first example one can see that \fk{} starts finding and integer feasible solution
-only when the $ur > 0.851$. Also is not \fk{} has not been ablo to find a linear feasible model 
-until $ur < 0.768$. From the \Figure{} one can also notice that the magior part of the generated 
-models are infeasible, so they are completly useless to identify informations about the importance 
+only when the $ur > 0.851$. Also is not \fk{} has not been able to find a linear feasible model 
+until $ur < 0.768$. From the \Figure{} one can also notice that the major part of the generated 
+models are infeasible, so they are completely useless to identify information about the importance 
 of each variable. From \Table{} it is possible to see that $ur$ does not define a precise border between 
 Infeasible and Linear Feasible region or between Linear and Integer Feasible region.
 
 
 \importExample{beavma}{https://miplib.zib.de/instance_details_beavma.html}
 
-In \Instance{} the situation is a bit different: \ks{} has not been able to find a Linear Feasbile model. 
+In \Instance{} the situation is a bit different: \fk{} has not been able to find a Linear Feasible model. 
 Besides that also in this case reading carefully \Table{} allows to understand that $ur$ does not define any 
-boarder. From \Figure{} one can see that \ks{} generated on 3 valid submodels for \Instance{}, and all with a $ur > 0.969$. 
-This means that the value of the score computed by \ks{} is almost insignificant. An insignificant dataset will produce a 
-meaningless random forrest that will bring to a meaningless kernel. 
+boarder. From \Figure{} one can see that \fk{} generated on 3 valid sub-models for \Instance{}, and all with a $ur > 0.969$. 
+This means that the value of the score computed by \fk{} is almost insignificant. An insignificant dataset will produce a 
+meaningless random forest that will bring to a meaningless kernel. 
 
 
 \importExample{mas74}{https://miplib.zib.de/instance_details_mas74.html}
 
-\Instance{} is a lucky case: it is the only where \ks{} has been able to find an Integer Feasible model with $ur < 0.85$, infact
-
-
-
+\Instance{} is a lucky case: it is the only where \fk{} has been able to find an Integer Feasible model with a small $ur$. 
+This is the desired behavior of the method: continuous jumps between feasible and infeasible models in order to 
+find with variables are more \emph{important}. It is worth notice, from \Table{}, that the submodel never reached a maximum
+$ur = 0.615$ so a large part of all possible results was not controlled by \fk{}. It is not possible know if exploring 
+the rest of the \emph{ur space} could allow to find a better initial kernel. 
 
 \importExample{neos-2294525-abba}{https://miplib.zib.de/instance_details_neos-2294525-abba.html}
+
+\Instance{}, in contrast of the other instances described above, is considered \emph{hard}. This fact becomes evident when one
+takes a close look to \Figure{}: there are a lot of black dots showing that a good number of instances was stopped due to  timeout and
+not because they were infeasible. With \Instance{} \fk{} was able to find a clear boarder between infeasible and linear feasible 
+instances: this is probably consequence of the structure of the constraints. Although it could be possible to increase the 
+maximum time allowed to solve an instance, it could be counterproductive infect the \fk's goal is to reduce the time spent 
+building an initial kernel. 
+
+
+
+
+
+
+
+
